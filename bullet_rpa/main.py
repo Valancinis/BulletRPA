@@ -13,9 +13,11 @@ def main(page: ft.Page):
 
     def add_robot(e):
         bot = {
-            inputName : selected_files
+            "name" : inputName.value,
+            "files" : selected_files.value
         }
-        return bot
+        bot_list.append(bot)
+        workers.store_data(bot_list)
 
     header = ft.Text(value="BULLET", color="green")
     inputName = ft.TextField(label="RPA name", color="green", autofocus=True)
@@ -41,9 +43,8 @@ def main(page: ft.Page):
         )
     )
 
-
     add_button = ft.ElevatedButton(
-        "Add", on_click=lambda e: bot_list.append(add_robot(e))
+        "Add", icon=ft.icons.ADD, on_click=add_robot
     )
     page.add(add_button)
 
