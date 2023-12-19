@@ -22,7 +22,7 @@ def main(page: ft.Page):
         page.update(input_name, selected_files, bot_library)
 
     # Defining a function that adds a robot to the list
-    def add_robot():
+    def add_robot(e):
 
         # Check and store the robot name and path
         if input_name.value == "" or selected_files.value == "":
@@ -46,6 +46,7 @@ def main(page: ft.Page):
     def remove_robot(bot_index):
         del bot_list[bot_index]
         update_bot_list()
+        workers.store_data(bot_list, file_path)
 
     def update_bot_list():
         widgets = [ft.Row([

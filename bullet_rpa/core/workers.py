@@ -13,4 +13,3 @@ def load_data(file_path):
 def store_data(list, file_path):
     with open(file_path, 'w') as f:
         json.dump(list, f)
-
