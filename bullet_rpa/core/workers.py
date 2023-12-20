@@ -1,4 +1,6 @@
 import json
+import flet as ft
+
 
 def load_data(file_path):
     with open(file_path, 'r') as file:
@@ -10,6 +12,25 @@ def load_data(file_path):
         data = json.loads(content)
     return data
 
-def store_data(list, file_path):
+
+def store_data(bot_list, file_path):
     with open(file_path, 'w') as f:
-        json.dump(list, f)
+        json.dump(bot_list, f)
+
+
+class LongButton(ft.UserControl):
+    def __init__(self, btn_name, action):
+        super().__init__()
+        self.name = btn_name
+        self.action = action
+
+    def build(self):
+        wide_button = ft.Stack(
+            [ft.Container(bgcolor='#ff0000', expand=True, width=300, height=100),
+                ft.Text(value=self.name, size=20),
+             ],
+            expand=True,
+        )
+        gesture_detector = ft.GestureDetector(on_tap=self.action, content=wide_button)
+
+        return gesture_detector

@@ -49,12 +49,12 @@ def main(page: ft.Page):
         workers.store_data(bot_list, file_path)
 
     def update_bot_list():
-        widgets = [ft.Row([
-            ft.ElevatedButton(bot["name"], style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=5))),
+        bot_widgets = [ft.Row([
+            ft.ElevatedButton(abot["name"], style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=5))),
             ft.ElevatedButton("-", style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=5)),
-                              on_click=lambda e, index=i: remove_robot(index))
-        ]) for i, bot in enumerate(bot_list)]
-        bot_library.controls = widgets
+                              on_click=lambda e, index=n: remove_robot(index))
+        ]) for n, abot in enumerate(bot_list)]
+        bot_library.controls = bot_widgets
         page.update()
 
     # Load the list of robots
@@ -102,6 +102,8 @@ def main(page: ft.Page):
 
     # Add controls to the page
     page.add(header, input_name, file_pick_row, add_button, ft.Divider(), bot_library)
+
+    page.add(workers.LongButton("TestName", update_bot_list))
 
 
 if __name__ == '__main__':
