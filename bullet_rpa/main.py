@@ -13,13 +13,13 @@ def main(page: ft.Page):
 
     # Define function to update the bot list
     def update_bot_list():
-        # Define new list to store available bot buttons
-        bot_buttons = []
-        for bot in bot_list:
-            bot_buttons.append(
-                ft.ElevatedButton(bot["name"], style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=5))))
-        bot_library.controls = bot_buttons
-        page.update(input_name, selected_files, bot_library)
+        bot_widgets = [ft.Row([
+            ft.ElevatedButton(case["name"], style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=5))),
+            ft.ElevatedButton("-", style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=5)),
+                              on_click=lambda e, index=n: remove_robot(index))
+        ]) for n, case in enumerate(bot_list)]
+        bot_library.controls = bot_widgets
+        page.update()
 
     # Defining a function that adds a robot to the list
     def add_robot(e):
@@ -47,15 +47,6 @@ def main(page: ft.Page):
         del bot_list[bot_index]
         update_bot_list()
         workers.store_data(bot_list, file_path)
-
-    def update_bot_list():
-        bot_widgets = [ft.Row([
-            ft.ElevatedButton(abot["name"], style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=5))),
-            ft.ElevatedButton("-", style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=5)),
-                              on_click=lambda e, index=n: remove_robot(index))
-        ]) for n, abot in enumerate(bot_list)]
-        bot_library.controls = bot_widgets
-        page.update()
 
     # Load the list of robots
     file_path = 'data/robots.json'
