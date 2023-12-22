@@ -1,9 +1,14 @@
 import flet as ft
 from core import workers as workers, long_button
+import threading
 
+class State:
+    i = 0
+
+s = State()
+sem = threading.Semaphore()
 
 def main(page: ft.Page):
-
     # Defining a function that picks a file and updates the text field
     def pick_files_result(e: ft.FilePickerResultEvent):
         selected_files.value = (
@@ -14,7 +19,7 @@ def main(page: ft.Page):
     # Define function to update the bot list
     def update_bot_list():
         bot_widgets = [ft.Row([
-            ft.ElevatedButton(case["name"], style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=5))),
+            long_button.LongButton(case["name"]),
             ft.ElevatedButton("-", style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=5)),
                               on_click=lambda e, index=n: remove_robot(index))
         ]) for n, case in enumerate(bot_list)]
@@ -23,16 +28,15 @@ def main(page: ft.Page):
 
     # Defining a function that adds a robot to the list
     def add_robot(e):
-
         # Check and store the robot name and path
         if input_name.value == "" or selected_files.value == "":
             return
         else:
-            bot = {
+            bot_name = {
                 "name": input_name.value,
                 "path": selected_files.value
             }
-            bot_list.append(bot)
+            bot_list.append(bot_name)
             workers.store_data(bot_list, file_path)
 
             # Update the list of robots to blank values
@@ -94,7 +98,34 @@ def main(page: ft.Page):
     # Add controls to the page
     page.add(header, input_name, file_pick_row, add_button, ft.Divider(), bot_library)
 
-    page.add()
+
+
+    # Scrolling functionality
+    def on_scroll(e: ft.OnScrollEvent):
+        if e.pixels >= e.max_scroll_extent - 100:
+            if sem.acquire(blocking=False):
+                try:
+                    for i in range(0, 10):
+                        cl.controls.append(ft.Text(f"Text line {s.i}", key=str(s.i)))
+                        s.i += 1
+                    cl.update()
+                finally:
+                    sem.release()
+
+    cl = ft.Column(
+        spacing=10,
+        height=200,
+        width=200,
+        scroll=ft.ScrollMode.ALWAYS,
+        on_scroll_interval=0,
+        on_scroll=on_scroll,
+    )
+    for i in range(0, 50):
+        cl.controls.append(ft.Text(f"Text line {s.i}", key=str(s.i)))
+        s.i += 1
+
+    page.add(ft.Container(cl, border=ft.border.all(1)))
+    # End of scrolling functionality
 
 
 if __name__ == '__main__':
