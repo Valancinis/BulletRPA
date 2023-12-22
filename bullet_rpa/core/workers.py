@@ -16,30 +16,3 @@ def load_data(file_path):
 def store_data(bot_list, file_path):
     with open(file_path, 'w') as f:
         json.dump(bot_list, f)
-
-
-class LongButton(ft.UserControl):
-    def __init__(self, btn_name, action):
-        # Initialising the class, assigning arguments to variables
-        super().__init__()
-        self.name = btn_name
-        self.action = action
-
-        # Creating a container for background color and functionality
-        self.container = ft.Container(
-            content=ft.Text(value=self.name, size=20),
-            bgcolor='#ff0000',
-            expand=True,
-            width=300,
-            height=100,
-            on_click=self.action,
-            ink=True,
-        )
-
-    # Defining a build function to push any controls from a class instance
-    def build(self):
-        wide_button = ft.Stack(
-            [self.container],
-            expand=True,
-        )
-        return wide_button

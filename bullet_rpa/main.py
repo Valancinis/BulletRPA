@@ -1,5 +1,5 @@
 import flet as ft
-import bullet_rpa.core.workers as workers
+from core import workers as workers, long_button
 
 
 def main(page: ft.Page):
@@ -85,7 +85,7 @@ def main(page: ft.Page):
     widgets = []
     for i, bot in enumerate(bot_list):
         widgets.append(ft.Row([
-            ft.ElevatedButton(bot['name'], style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=5))),
+            long_button.LongButton(bot['name']),
             ft.ElevatedButton('-', style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=5)),
                               on_click=lambda e, index=i: remove_robot(index))
         ]))
@@ -94,7 +94,7 @@ def main(page: ft.Page):
     # Add controls to the page
     page.add(header, input_name, file_pick_row, add_button, ft.Divider(), bot_library)
 
-    page.add(workers.LongButton("TestName", update_bot_list))
+    page.add()
 
 
 if __name__ == '__main__':
