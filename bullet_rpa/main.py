@@ -71,7 +71,7 @@ def main(page: ft.Page):
     bot_list = workers.load_data(file_path)
 
     # Defining the initial page layout
-    header = ft.Text(value="BULLET", color="green", size=25)
+    header = ft.Text(value="BULLET RPA", color="green", size=22)
 
     input_name = ft.TextField(
         label="RPA name",
@@ -140,9 +140,9 @@ def main(page: ft.Page):
     bot_library = ft.Column(
         widgets,
         spacing=10,
-        height=float('inf'),
+        height=350,
         width=200,
-        scroll=ft.ScrollMode.ALWAYS,
+        scroll=ft.ScrollMode.HIDDEN,
         on_scroll_interval=0
     )
 
