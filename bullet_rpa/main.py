@@ -83,10 +83,16 @@ def main(page: ft.Page):
     # Define the list of robots and assign it to a column control
     widgets = []
     for i, bot in enumerate(bot_list):
-        widgets.append(ft.Row([
-            long_button.LongButton(bot['name']),
-            ft.ElevatedButton('-', style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=5)),
-                              on_click=lambda e, index=i: remove_robot(index))
+        widgets.append(ft.Stack([
+                long_button.LongButton(bot['name']),
+                ft.Row([
+                    ft.ElevatedButton(
+                        '-',
+                        style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=5)),
+                        on_click=lambda e, index=i: remove_robot(index),),
+                    ],
+                    alignment=ft.MainAxisAlignment.END,
+                )
         ]))
 
     bot_library = ft.Column(widgets,

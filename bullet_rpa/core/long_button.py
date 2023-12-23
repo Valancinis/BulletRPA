@@ -10,11 +10,11 @@ class LongButton(ft.UserControl):
         # Creating a container for background color and functionality
         self.container = ft.Container(
             content=ft.Text(value=self.name, size=20),
-            bgcolor='#ff0000',
-            expand=True,
-            width=300,
-            height=100,
+            bgcolor='#141024',
+            width=float('inf'),
+            height=50,
             ink=True,
+            padding=10,
         )
 
     # Defining a build function to push any controls from a class instance
