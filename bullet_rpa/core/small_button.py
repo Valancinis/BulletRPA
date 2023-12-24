@@ -28,28 +28,3 @@ class SmallButton(ft.UserControl):
 
     def build(self):
         return ft.Stack([self.small_button], expand=True)
-
-
-class TestSmallButton(ft.UserControl):
-    def __init__(self, action, size=10):
-        super().__init__()
-
-        # Assigning user inputs
-        self.action = action
-        self.size = size
-
-        # Creating a small button
-        self.small_button = ft.Container(
-            content=ft.Icon(name=ft.icons.DELETE, size=self.size),
-            ink=True,
-            on_click=lambda e: self.action(e),
-            width=20,
-            height=20,
-            border_radius=5,
-            bgcolor='#141024',
-            border=ft.border.all(0.5, "#848fce"),
-        )
-
-    def build(self):
-        return ft.Stack([self.small_button], expand=True
-                        )
