@@ -36,6 +36,7 @@ def main(page: ft.Page):
     def update_bot_list():
         bot_widgets = []
         for bot_index, bot_key in enumerate(bot_list):
+
             bot_widgets.append(ft.Stack([
                 long_button.LongButton(bot_key['name']),
                 ft.Row([
@@ -113,27 +114,25 @@ def main(page: ft.Page):
         alignment=ft.MainAxisAlignment.CENTER,
     )
 
-    # Predefine the bot library container with all bots
-    bot_library = ""
-
     # Define the list of robots and assign it to a column control
     widgets = []
     for i, bot in enumerate(bot_list):
+
         widgets.append(ft.Stack([
-                long_button.LongButton(bot['name']),
-                ft.Row([
-                    ft.ElevatedButton(
-                        ' ',
-                        width=50,
-                        icon=ft.icons.DELETE,
-                        style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=5)),
-                        on_click=lambda e, index=i: remove_robot(index),
-                    )],
-                    bottom=10,
-                    right=10,
-                )],
-
-
+            long_button.LongButton(bot['name']),
+            ft.Row([
+                ft.ElevatedButton(
+                    content=ft.Row([ft.Icon(name=ft.icons.DELETE, size=12)], alignment=ft.MainAxisAlignment.START),
+                    width=20,
+                    height=20,
+                    style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=5)),
+                    on_click=lambda e, index=i: remove_robot(index),
+                ),
+            ],
+                bottom=15,
+                right=15,
+            ),
+        ],
         ))
 
     bot_library = ft.Column(
