@@ -10,13 +10,15 @@ def main(page: ft.Page):
     # Define the list of robots and assign it to a column control
     widgets = []
     for i in range(30):
-        widgets.append(ft.Container(content=ft.Text(value="Test"),
-                                    bgcolor='#141024',
-                                    border=ft.border.all(0.5, "#848fce"),
-                                    border_radius=5,
-                                    ink=True,
-                                    on_click=action(),
-                                    ),)
+        widgets.append(ft.Row([
+                ft.ElevatedButton(
+                    content=ft.Row([ft.Icon(name=ft.icons.DELETE, size=12)], alignment=ft.MainAxisAlignment.END),
+                    width=50,
+                    height=50,
+                    style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=5)),
+                    on_click=lambda: action(),
+                ),
+            ],))
 
     bot_library = ft.Column(
         widgets,
