@@ -1,40 +1,13 @@
-from core import workers as workers, long_button
+from core import workers, long_button
+from utils import helpers
 
 import flet as ft
 
 
 def main(page: ft.Page):
-    # Defining a function that picks a file and updates the text field
-    def pick_files_result(e: ft.FilePickerResultEvent):
-        selected_files.value = (
-            ", ".join(map(lambda f: f.path, e.files)) if e.files else ""
-        )
-        selected_files.update()
-
-    # Define function to update the bot list
-    def update_bot_list():
-        bot_widgets = []
-        for i, bot in enumerate(bot_list):
-            bot_widgets.append(ft.Stack([
-                long_button.LongButton(bot['name']),
-                ft.Row([
-                    ft.ElevatedButton(
-                        ' ',
-                        width=50,
-                        icon=ft.icons.DELETE,
-                        style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=5)),
-                        on_click=lambda e, index=i: remove_robot(index),
-                    ),
-                ],
-                    bottom=10,
-                    right=10,
-                ),
-            ]))
-        bot_library.controls = bot_widgets
-        page.update()
 
     # Defining a function that adds a robot to the list
-    def add_robot(e):
+    def add_robot(_):
         # Check and store the robot name and path
         if input_name.value == "" or selected_files.value == "":
             return
@@ -58,6 +31,28 @@ def main(page: ft.Page):
         del bot_list[bot_index]
         update_bot_list()
         workers.store_data(bot_list, file_path)
+
+    # Define function to update the bot list
+    def update_bot_list():
+        bot_widgets = []
+        for bot_index, bot_key in enumerate(bot_list):
+            bot_widgets.append(ft.Stack([
+                long_button.LongButton(bot_key['name']),
+                ft.Row([
+                    ft.ElevatedButton(
+                        ' ',
+                        width=50,
+                        icon=ft.icons.DELETE,
+                        style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=5)),
+                        on_click=lambda e, index=bot_index: remove_robot(index),
+                    ),
+                ],
+                    bottom=10,
+                    right=10,
+                ),
+            ]))
+        bot_library.controls = bot_widgets
+        page.update()
 
     # TODO: Function that runs the robot
 
@@ -83,7 +78,8 @@ def main(page: ft.Page):
     )
 
     # Define file picker and its functionality
-    pick_files_dialog = ft.FilePicker(on_result=pick_files_result)
+    pick_files_dialog = ft.FilePicker(
+        on_result=lambda e: helpers.pick_files_result(e, selected_files))
     selected_files = ft.TextField(
         label="File path",
         height=45,
@@ -117,6 +113,9 @@ def main(page: ft.Page):
         alignment=ft.MainAxisAlignment.CENTER,
     )
 
+    # Predefine the bot library container with all bots
+    bot_library = ""
+
     # Define the list of robots and assign it to a column control
     widgets = []
     for i, bot in enumerate(bot_list):
@@ -128,8 +127,8 @@ def main(page: ft.Page):
                         width=50,
                         icon=ft.icons.DELETE,
                         style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=5)),
-                        on_click=lambda e, index=i: remove_robot(index),),
-                    ],
+                        on_click=lambda e, index=i: remove_robot(index),
+                    )],
                     bottom=10,
                     right=10,
                 )],

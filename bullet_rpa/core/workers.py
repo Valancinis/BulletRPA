@@ -1,5 +1,4 @@
 import json
-import flet as ft
 
 
 def load_data(file_path):
