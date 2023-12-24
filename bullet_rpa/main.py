@@ -1,4 +1,4 @@
-from core import workers, long_button
+from core import workers, long_button, small_button
 from utils import helpers
 
 import flet as ft
