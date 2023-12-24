@@ -122,7 +122,7 @@ def main(page: ft.Page):
             long_button.LongButton(bot['name']),
             ft.Row([
                 ft.ElevatedButton(
-                    content=ft.Row([ft.Icon(name=ft.icons.DELETE, size=12)], expand=True, alignment=ft.MainAxisAlignment.START),
+                    content=ft.Row([ft.Icon(name=ft.icons.DELETE, size=12)]),
                     width=20,
                     height=20,
                     style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=5)),
