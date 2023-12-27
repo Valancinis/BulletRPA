@@ -37,11 +37,11 @@ def main(page: ft.Page):
                     bgcolor="#2c2833",
                 ),
                 ft.ElevatedButton(
-                    content=ft.Icon(name=ft.icons.MORE_TIME, size=12 ,color="#ffffff"),
+                    content=ft.Icon(name=ft.icons.MORE_TIME, size=12, color="#ffffff"),
                     width=20,
                     height=20,
                     style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=5), padding=0),
-                    on_click=lambda e, idx=index: remove_robot(idx),
+                    on_click=open_popup,
                     bgcolor="#2c2833",
                 ),
             ],
@@ -86,6 +86,31 @@ def main(page: ft.Page):
 
     def launch_software(path):
         subprocess.Popen(['open', path])
+
+    def close_popup(_):
+        popup_container.visible = False
+        page.update()
+
+    def open_popup(_):
+        popup_container.visible = True
+        page.update()
+
+    # Popup container for scheduling
+    popup_container = ft.Container(
+        content=ft.Column([
+            ft.Text("Set Schedule"),
+            ft.TextField(label="Interval (hours)"),
+            ft.ElevatedButton(text="Set", on_click=close_popup),
+            ft.ElevatedButton(text="Cancel", on_click=close_popup)
+        ]),
+        width=200,
+        height=150,
+        bgcolor=ft.colors.WHITE,
+        visible=False,  # Initially hidden
+        border_radius=10
+    )
+
+    page.add(popup_container)
 
     # Define page appearance
     page.title = "BULLET RPA"

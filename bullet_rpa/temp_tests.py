@@ -1,59 +1,34 @@
 import flet as ft
-from core import small_button, long_button
-
 
 def main(page: ft.Page):
 
-    def action():
-        print("Testing")
+    # Function to close the overlay
+    def close_overlay(_):
+        overlay.visible = False
+        page.update()
 
-    # Define the list of robots and assign it to a column control
-    widgets = []
-    for i in range(30):
-        widgets.append(ft.Row([
-                ft.ElevatedButton(
-                    content=ft.Icon(name=ft.icons.DELETE, size=12),
-                    width=20,
-                    height=20,
-                    style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=5), padding=0),
-                    on_click=lambda: action(),
-                ),
-            ],))
-
-    bot_library = ft.Column(
-        widgets,
-        spacing=10,
-        height=350,
-        width=200,
-        scroll=ft.ScrollMode.HIDDEN,
-        on_scroll_interval=0
+    # Define the overlay content, initially hidden
+    overlay = ft.Container(
+        content=ft.Column([
+            ft.Text("This is a popup!"),
+            ft.ElevatedButton(text="Close", on_click=close_overlay)
+        ], alignment=ft.MainAxisAlignment.CENTER),
+        width=300,
+        height=200,
+        bgcolor=ft.colors.WHITE,
+        visible=False  # Initially hidden
     )
 
-    page.add(bot_library)
+    # Function to show the overlay
+    def show_overlay(_):
+        overlay.visible = True
+        page.update()
 
+    # Create the main button to open the overlay
+    open_button = ft.ElevatedButton(text="Open Popup", on_click=show_overlay)
+
+    # Add the overlay and the main button to the page
+    page.add(overlay, open_button)
 
 if __name__ == '__main__':
     ft.app(target=main)
-
-
-    """
-    ft.ElevatedButton(
-                    ' ',
-                    width=50,
-                    icon=ft.icons.DELETE,
-                    style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=5)),
-                    on_click=lambda e, index=i: print("Testing"),
-                ),
-
-        ft.Container(
-                #content=ft.Icon(name=ft.icons.DELETE),
-                content=ft.Text(value="Test"),
-                ink=True,
-                on_click=lambda e: action(),
-                width=20,
-                height=20,
-                border_radius=5,
-                bgcolor='#141024',
-                border=ft.border.all(0.5, "#848fce"),
-        ))
-    """
