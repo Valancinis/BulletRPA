@@ -120,17 +120,26 @@ def main(page: ft.Page):
 
         widgets.append(ft.Stack([
             long_button.LongButton(bot['name']),
-            ft.Row([
+            ft.Column([
                 ft.ElevatedButton(
-                    content=ft.Row([ft.Icon(name=ft.icons.DELETE, size=12)]),
+                    content=ft.Icon(name=ft.icons.DELETE, size=12),
                     width=20,
                     height=20,
-                    style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=5)),
+                    style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=5), padding=0),
+                    on_click=lambda e, index=i: remove_robot(index),
+                ),
+                ft.ElevatedButton(
+                    content=ft.Icon(name=ft.icons.MORE_TIME, size=12),
+                    width=20,
+                    height=20,
+                    style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=5), padding=0),
                     on_click=lambda e, index=i: remove_robot(index),
                 ),
             ],
-                bottom=15,
-                right=15,
+                alignment=ft.MainAxisAlignment.CENTER,
+                spacing=3.5,
+                top=3.5,
+                right=5,
             ),
         ],
         ))

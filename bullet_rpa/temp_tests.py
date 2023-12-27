@@ -12,10 +12,10 @@ def main(page: ft.Page):
     for i in range(30):
         widgets.append(ft.Row([
                 ft.ElevatedButton(
-                    content=ft.Row([ft.Icon(name=ft.icons.DELETE, size=12)], alignment=ft.MainAxisAlignment.END),
-                    width=50,
-                    height=50,
-                    style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=5)),
+                    content=ft.Icon(name=ft.icons.DELETE, size=12),
+                    width=20,
+                    height=20,
+                    style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=5), padding=0),
                     on_click=lambda: action(),
                 ),
             ],))
