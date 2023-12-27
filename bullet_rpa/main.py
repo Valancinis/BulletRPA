@@ -1,4 +1,4 @@
-from core import workers, long_button
+from core import workers
 from utils import helpers
 import subprocess
 
@@ -6,6 +6,42 @@ import flet as ft
 
 
 def main(page: ft.Page):
+
+    # Handles button creation on the main page
+    def create_bot_button(bot_item, index):
+        bot_path = bot_item['path']
+        return ft.Stack([
+            ft.ElevatedButton(
+                content=ft.Row([
+                    ft.Text(bot_item['name']),
+                ], alignment=ft.MainAxisAlignment.START),
+                width=float('inf'),
+                height=50,
+                style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=5), padding=8),
+                on_click=lambda e, bots_path=bot_path: launch_software(bots_path),
+            ),
+            ft.Column([
+                ft.ElevatedButton(
+                    content=ft.Icon(name=ft.icons.DELETE, size=12),
+                    width=20,
+                    height=20,
+                    style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=5), padding=0),
+                    on_click=lambda e, idx=index: remove_robot(idx),
+                ),
+                ft.ElevatedButton(
+                    content=ft.Icon(name=ft.icons.MORE_TIME, size=12),
+                    width=20,
+                    height=20,
+                    style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=5), padding=0),
+                    on_click=lambda e, idx=index: remove_robot(idx),
+                ),
+            ],
+                alignment=ft.MainAxisAlignment.CENTER,
+                spacing=3.5,
+                top=3.5,
+                right=5,
+            ),
+        ])
 
     # Defining a function that adds a robot to the list
     def add_robot(_):
@@ -35,24 +71,7 @@ def main(page: ft.Page):
 
     # Define function to update the bot list
     def update_bot_list():
-        bot_widgets = []
-        for bot_index, bot_key in enumerate(bot_list):
-
-            bot_widgets.append(ft.Stack([
-                long_button.LongButton(bot_key),
-                ft.Row([
-                    ft.ElevatedButton(
-                        ' ',
-                        width=50,
-                        icon=ft.icons.DELETE,
-                        style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=5)),
-                        on_click=lambda e, index=bot_index: remove_robot(index),
-                    ),
-                ],
-                    bottom=10,
-                    right=10,
-                ),
-            ]))
+        bot_widgets = [create_bot_button(bot_item, index) for index, bot_item in enumerate(bot_list)]
         bot_library.controls = bot_widgets
         page.update()
 
@@ -119,51 +138,9 @@ def main(page: ft.Page):
     # Define the list of robots and assign it to a column control
     widgets = []
     for i, bot in enumerate(bot_list):
-        bot_path = bot['path']
-        widgets.append(ft.Stack([
+        widgets.append(create_bot_button(bot, i))
 
-            ft.ElevatedButton(
-                content=ft.Row([
-                    ft.Text(bot['name']),
-                ], alignment=ft.MainAxisAlignment.START),
-                width=float('inf'),
-                height=50,
-                style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=5), padding=8),
-                on_click=lambda e, bots_path=bot_path: launch_software(bots_path),
-            ),
-
-            ft.Column([
-                ft.ElevatedButton(
-                    content=ft.Icon(name=ft.icons.DELETE, size=12),
-                    width=20,
-                    height=20,
-                    style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=5), padding=0),
-                    on_click=lambda e, index=i: remove_robot(index),
-                ),
-                ft.ElevatedButton(
-                    content=ft.Icon(name=ft.icons.MORE_TIME, size=12),
-                    width=20,
-                    height=20,
-                    style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=5), padding=0),
-                    on_click=lambda e, index=i: remove_robot(index),
-                ),
-            ],
-                alignment=ft.MainAxisAlignment.CENTER,
-                spacing=3.5,
-                top=3.5,
-                right=5,
-            ),
-        ],
-        ))
-
-    bot_library = ft.Column(
-        widgets,
-        spacing=10,
-        height=350,
-        width=200,
-        scroll=ft.ScrollMode.HIDDEN,
-        on_scroll_interval=0
-    )
+    bot_library = ft.Column(widgets, spacing=10, height=350, width=200, scroll=ft.ScrollMode.HIDDEN)
 
     # Add controls to the page
     page.add(header, input_name, file_pick_row, add_button, ft.Divider(), bot_library,)
