@@ -13,27 +13,36 @@ def main(page: ft.Page):
         return ft.Stack([
             ft.ElevatedButton(
                 content=ft.Row([
-                    ft.Text(bot_item['name']),
+                    ft.Text(bot_item['name'],
+                            color="#ffffff",
+                            ),
                 ], alignment=ft.MainAxisAlignment.START),
                 width=float('inf'),
                 height=50,
-                style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=5), padding=8),
+                style=ft.ButtonStyle(
+                    shape=ft.RoundedRectangleBorder(radius=5),
+                    padding=8,
+                    bgcolor="#131517",
+                    color="#ffffff",
+                ),
                 on_click=lambda e, bots_path=bot_path: launch_software(bots_path),
             ),
             ft.Column([
                 ft.ElevatedButton(
-                    content=ft.Icon(name=ft.icons.DELETE, size=12),
+                    content=ft.Icon(name=ft.icons.DELETE, size=12, color="#ffffff"),
                     width=20,
                     height=20,
                     style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=5), padding=0),
                     on_click=lambda e, idx=index: remove_robot(idx),
+                    bgcolor="#2c2833",
                 ),
                 ft.ElevatedButton(
-                    content=ft.Icon(name=ft.icons.MORE_TIME, size=12),
+                    content=ft.Icon(name=ft.icons.MORE_TIME, size=12 ,color="#ffffff"),
                     width=20,
                     height=20,
                     style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=5), padding=0),
                     on_click=lambda e, idx=index: remove_robot(idx),
+                    bgcolor="#2c2833",
                 ),
             ],
                 alignment=ft.MainAxisAlignment.CENTER,
@@ -79,43 +88,56 @@ def main(page: ft.Page):
         subprocess.Popen(['open', path])
 
     # Define page appearance
+    page.title = "BULLET RPA"
     page.window_width = 200
     page.window_resizable = False
+    page.bgcolor = "#131517"
 
     # Load the list of robots
     file_path = 'data/robots.json'
     bot_list = []
     bot_list = workers.load_data(file_path)
 
-    # Defining the initial page layout
-    header = ft.Text(value="BULLET RPA", color="green", size=22)
-
     input_name = ft.TextField(
         label="RPA name",
-        color="green",
+        color="#ffffff",
         autofocus=True,
         height=50,
         text_size=15,
-        label_style=ft.TextStyle(size=15),
+        label_style=ft.TextStyle(color="#ffffff", size=15),
+        border_color="#889be6",
+        focused_border_color="#fd6161",
     )
 
     # Define file picker and its functionality
     pick_files_dialog = ft.FilePicker(
         on_result=lambda e: helpers.pick_files_result(e, selected_files))
+
     selected_files = ft.TextField(
         label="File path",
-        height=45,
-        width=120,
-        text_size=8,
-        label_style=ft.TextStyle(size=14),
+        height=35,
+        width=140,
+        text_size=10,
+        label_style=ft.TextStyle(color="#ffffff", size=14),
+        border_color="#889be6",
+        focused_border_color="#fd6161",
     )
 
     picker_button = ft.ElevatedButton(
-        text=" ",
-        icon=ft.icons.UPLOAD_FILE,
-        width=45,
+        content=ft.Row([
+            ft.Icon(name=ft.icons.UPLOAD_FILE, size=18, color="#ffffff"),  # White icon color for visibility
+        ],
+            alignment=ft.MainAxisAlignment.CENTER,
+        ),
+        style=ft.ButtonStyle(
+            bgcolor="#1c1f24",  # Slightly lighter shade than the background for subtlety
+            elevation=2,  # Small elevation to give depth
+            shape=ft.RoundedRectangleBorder(radius=15),  # Rounded corners for style
+            padding=6
+        ),
+        width=30,  # Adjust the width if necessary
         on_click=lambda _: pick_files_dialog.pick_files(
-            allow_multiple=False
+            allow_multiple=False,
         )
     )
 
@@ -130,7 +152,12 @@ def main(page: ft.Page):
     # Define the button that adds the robot to the list
     add_button = ft.Row([
         ft.ElevatedButton(
-            "Add", icon=ft.icons.ADD, on_click=add_robot
+            "Add", icon=ft.icons.ADD,
+            on_click=add_robot,
+            style=ft.ButtonStyle(
+                bgcolor="#fd6161",
+                color="#ffffff",
+            ),
         )],
         alignment=ft.MainAxisAlignment.CENTER,
     )
@@ -140,10 +167,10 @@ def main(page: ft.Page):
     for i, bot in enumerate(bot_list):
         widgets.append(create_bot_button(bot, i))
 
-    bot_library = ft.Column(widgets, spacing=10, height=350, width=200, scroll=ft.ScrollMode.HIDDEN)
+    bot_library = ft.Column(widgets, spacing=10, height=408, width=200, scroll=ft.ScrollMode.HIDDEN)
 
     # Add controls to the page
-    page.add(header, input_name, file_pick_row, add_button, ft.Divider(), bot_library,)
+    page.add(input_name, file_pick_row, add_button, ft.Divider(), bot_library,)
 
 
 if __name__ == '__main__':
