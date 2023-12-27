@@ -1,6 +1,6 @@
 import flet as ft
 
-
+# NOT USED ANYMORE, A BUILT-IN CONTROL WAS USED
 class SmallButton(ft.UserControl):
     def __init__(self, icon, action, size=10):
         super().__init__()

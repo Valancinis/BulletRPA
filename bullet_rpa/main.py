@@ -1,5 +1,6 @@
-from core import workers, long_button, small_button
+from core import workers, long_button
 from utils import helpers
+import subprocess
 
 import flet as ft
 
@@ -38,7 +39,7 @@ def main(page: ft.Page):
         for bot_index, bot_key in enumerate(bot_list):
 
             bot_widgets.append(ft.Stack([
-                long_button.LongButton(bot_key['name']),
+                long_button.LongButton(bot_key),
                 ft.Row([
                     ft.ElevatedButton(
                         ' ',
@@ -55,7 +56,8 @@ def main(page: ft.Page):
         bot_library.controls = bot_widgets
         page.update()
 
-    # TODO: Function that runs the robot
+    def launch_software(path):
+        subprocess.Popen(['open', path])
 
     # Define page appearance
     page.window_width = 200
@@ -117,9 +119,19 @@ def main(page: ft.Page):
     # Define the list of robots and assign it to a column control
     widgets = []
     for i, bot in enumerate(bot_list):
-
+        bot_path = bot['path']
         widgets.append(ft.Stack([
-            long_button.LongButton(bot['name']),
+
+            ft.ElevatedButton(
+                content=ft.Row([
+                    ft.Text(bot['name']),
+                ], alignment=ft.MainAxisAlignment.START),
+                width=float('inf'),
+                height=50,
+                style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=5), padding=8),
+                on_click=lambda e, bots_path=bot_path: launch_software(bots_path),
+            ),
+
             ft.Column([
                 ft.ElevatedButton(
                     content=ft.Icon(name=ft.icons.DELETE, size=12),
