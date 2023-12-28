@@ -1,8 +1,10 @@
 from core import workers
 from utils import helpers
 
-import subprocess
 import flet as ft
+import subprocess
+import threading
+import time
 
 current_bot_name = ""
 
@@ -80,7 +82,8 @@ def main(page: ft.Page):
         else:
             bot_name = {
                 "name": input_name.value,
-                "path": selected_files.value
+                "path": selected_files.value,
+                "schedule": None
             }
             bot_list.append(bot_name)
             workers.store_data(bot_list, file_path)
@@ -105,7 +108,48 @@ def main(page: ft.Page):
         page.update()
 
     def launch_software(path):
-        subprocess.Popen(['open', path])
+        subprocess.Popen(['open', path], close_fds=True)
+
+    # Define a lock for thread-safe operations on bot_list
+    bot_list_lock = threading.Lock()
+
+    def schedule_bots(bot_list):
+        last_run_times = {}
+
+        while True:
+            with bot_list_lock:  # Acquire lock before accessing bot_list
+                current_time = time.time()
+
+                for bot in bot_list:
+                    # Initialize last run time for new bots
+                    if bot['name'] not in last_run_times:
+                        last_run_times[bot['name']] = None
+
+                    schedule_str = bot.get('schedule')
+                    if not schedule_str:
+                        continue  # Skip bots without a valid schedule
+
+                    try:
+                        schedule = float(schedule_str)
+                        if schedule <= 0:
+                            continue
+                    except ValueError:
+                        continue  # Skip if schedule is not a valid number
+
+                    schedule_time = schedule * 3600  # Convert hours to seconds
+
+                    if last_run_times[bot['name']] is None:
+                        # First run, set the last run time to current time
+                        last_run_times[bot['name']] = current_time
+                    else:
+                        next_run_time = last_run_times[bot['name']] + schedule_time
+                        if current_time >= next_run_time:
+                            launch_software(bot['path'])
+                            last_run_times[bot['name']] = current_time  # Update last run time
+
+            # Check every 15 minutes if bots need to run
+            check_interval = 15
+            time.sleep(60 * check_interval)
 
     # Function to close the popup
     def close_popup(_):
@@ -131,18 +175,33 @@ def main(page: ft.Page):
     def set_schedule(_):
         try:
             global current_bot_name
-            print(f"Attempting to set schedule for: {current_bot_name}")
-            print(f"Current bot_list: {bot_list}")
-            current_bot = next((each_bot for each_bot in bot_list if each_bot["name"] == current_bot_name), None)
+            current_bot = next((bot for bot in bot_list if bot["name"] == current_bot_name), None)
             if current_bot is not None:
-                current_bot["schedule"] = int(bot_schedule.value) if bot_schedule.value else None
+                if bot_schedule.value:
+                    try:
+                        # Convert to float then back to string to clean the input
+                        schedule_value = float(bot_schedule.value)
+                        # Format string to remove trailing zeros and prevent scientific notation
+                        current_bot["schedule"] = ('{:.5f}'.format(schedule_value)).rstrip('0').rstrip('.')
+                    except ValueError:
+                        # Handle invalid float input here (e.g., log or display an error)
+                        pass
+                else:
+                    current_bot["schedule"] = "0"  # Default value if empty
+
                 workers.store_data(bot_list, file_path)
-                print("Data saved successfully.")
             else:
-                print(f"Bot not found: {current_bot_name}")
+                # Handle the case where the bot is not found
+                pass
             close_popup(None)
         except Exception as e:
-            print(f"Error updating schedule: {e}")
+            # Handle exceptions silently, could add log here
+            pass
+
+    # Running a thread to schedule bots
+    thread = threading.Thread(target=schedule_bots, args=(bot_list,))
+    thread.daemon = True  # This makes the thread exit when the main program exits
+    thread.start()
 
     # Popup container for scheduling
     popup_title = ft.Text("", size=12, color="#ffffff")  # White text color
