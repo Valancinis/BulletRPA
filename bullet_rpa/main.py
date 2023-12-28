@@ -115,8 +115,15 @@ def main(page: ft.Page):
     # Define page appearance
     page.title = "BULLET RPA"
     page.window_width = 200
+    page.window_height = 595
     page.window_resizable = False
     page.bgcolor = "#131517"
+    page.theme = ft.Theme(
+        scrollbar_theme=ft.ScrollbarTheme(
+            thickness=2,
+            cross_axis_margin=-4,
+        )
+    )
 
     # Load the list of robots
     file_path = 'data/robots.json'
@@ -126,7 +133,6 @@ def main(page: ft.Page):
     input_name = ft.TextField(
         label="RPA name",
         color="#ffffff",
-        autofocus=True,
         height=50,
         text_size=15,
         label_style=ft.TextStyle(color="#ffffff", size=15),
@@ -150,17 +156,18 @@ def main(page: ft.Page):
 
     picker_button = ft.ElevatedButton(
         content=ft.Row([
-            ft.Icon(name=ft.icons.UPLOAD_FILE, size=18, color="#ffffff"),  # White icon color for visibility
+            ft.Icon(name=ft.icons.UPLOAD_FILE, size=24, color="#ffffff"),  # White icon color for visibility
         ],
             alignment=ft.MainAxisAlignment.CENTER,
         ),
         style=ft.ButtonStyle(
             bgcolor="#1c1f24",  # Slightly lighter shade than the background for subtlety
             elevation=2,  # Small elevation to give depth
-            shape=ft.RoundedRectangleBorder(radius=15),  # Rounded corners for style
-            padding=6
+            shape=ft.RoundedRectangleBorder(radius=20),  # Rounded corners for style
+            padding=6.1
         ),
-        width=30,  # Adjust the width if necessary
+        width=35,
+        height=35,
         on_click=lambda _: pick_files_dialog.pick_files(
             allow_multiple=False,
         )
@@ -171,7 +178,8 @@ def main(page: ft.Page):
         selected_files,
         picker_button,
         pick_files_dialog,
-        ]
+        ],
+        spacing=6,
     )
 
     # Define the button that adds the robot to the list
@@ -182,9 +190,13 @@ def main(page: ft.Page):
             style=ft.ButtonStyle(
                 bgcolor="#fd6161",
                 color="#ffffff",
+                shape=ft.RoundedRectangleBorder(radius=15),
             ),
+            width=float('inf'),
+            expand=True,
+            height=30,
         )],
-        alignment=ft.MainAxisAlignment.CENTER,
+        alignment=ft.MainAxisAlignment.START,
     )
 
     # Define the list of robots and assign it to a column control
@@ -192,7 +204,7 @@ def main(page: ft.Page):
     for i, bot in enumerate(bot_list):
         widgets.append(create_bot_button(bot, i))
 
-    bot_library = ft.Column(widgets, spacing=10, height=408, width=200, scroll=ft.ScrollMode.HIDDEN)
+    bot_library = ft.Column(widgets, spacing=10, height=380, width=200, scroll=ft.ScrollMode.HIDDEN)
 
     # Add controls to the page
     page.add(input_name, file_pick_row, add_button, ft.Divider(), bot_library,)
