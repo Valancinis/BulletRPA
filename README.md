@@ -1,9 +1,13 @@
 # Bullet-RPA
 #### Video Demo:  <https://youtu.be/FnMiUqZV1xI>
 #### Description:
-This is the description for CS50 course. This project is a UI for custom RPA bots that my RPA business will use. We build an RPA robot, and we want our users to have an easy-to-use and simple interface to access those bots. My project achieves this.
+This is the description for CS50 course. This project is a UI for custom RPA bots that my RPA business will use. I have built a UI software for managing and scheduling RPA robots. Curently I am building various bots for my customers and I wanted to have a custom software so my customers could manage their bots easily.
 
-DESCRIPTION OF WHAT WE ARE AIMING FOR AFTER CS50
+Current Bullet-RPA itteration allows users to add bots, they are saved to the json file which is stored localy on users computers. Then users are allowed to launch bot manually or shedule their bots to run periodidally. Users can put in time interval for how offten they want their bot to run and bots will run as long as Bullet-RPA is running.
+
+User can also delete bots if they no longer need them.
+
+#### Plans after CS50 (And the original description)
 Here is a repository for "Bullet", an RPA software. We are building an easy to use RPA software that with only few steps allow users to automate basic data copy/pasting actions for lists of data.
 
 The initial steps of this software is to have an interface that allows our clients to access their RPA bots easily, to add/remove robots, schedule their run time and choose what to do when robots stop running.
