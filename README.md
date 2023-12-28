@@ -1,4 +1,4 @@
-# Bullet-RPA
+# BulletRPA
 #### Video Demo:  <https://youtu.be/FnMiUqZV1xI>
 #### Description:
 This is the description for CS50 course. This project is a UI for custom RPA bots that my RPA business will use. I have built a UI software for managing and scheduling RPA robots. Curently I am building various bots for my customers and I wanted to have a custom software so my customers could manage their bots easily.
