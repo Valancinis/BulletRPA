@@ -1,11 +1,31 @@
 from core import workers
 from utils import helpers
-import subprocess
 
+import subprocess
 import flet as ft
+
+current_bot_name = ""
 
 
 def main(page: ft.Page):
+
+    # Load the list of robots
+    file_path = 'data/robots.json'
+    bot_list = []
+    bot_list = workers.load_data(file_path)
+
+    # Define page appearance
+    page.title = "BULLET RPA"
+    page.window_width = 200
+    page.window_height = 580
+    page.window_resizable = False
+    page.bgcolor = "#131517"
+    page.theme = ft.Theme(
+        scrollbar_theme=ft.ScrollbarTheme(
+            thickness=2,
+            cross_axis_margin=-4,
+        )
+    )
 
     # Handles button creation on the main page
     def create_bot_button(bot_item, index):
@@ -41,7 +61,7 @@ def main(page: ft.Page):
                     width=20,
                     height=20,
                     style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=5), padding=0),
-                    on_click=open_popup,
+                    on_click=lambda e: open_popup(bot_item['name'], e),
                     bgcolor="#2c2833",
                 ),
             ],
@@ -87,57 +107,108 @@ def main(page: ft.Page):
     def launch_software(path):
         subprocess.Popen(['open', path])
 
+    # Function to close the popup
     def close_popup(_):
         popup_container.visible = False
+        container_dimmer.visible = False
         page.update()
 
-    def open_popup(_):
+    # Function to open the scheduling popup
+    def open_popup(bot_name, _):
+        global current_bot_name
+        current_bot_name = bot_name
+        popup_title.value = f"Schedule for {bot_name}"
+        current_bot = next((each_bot for each_bot in bot_list if each_bot["name"] == bot_name), None)
+        if current_bot is not None:
+            # Convert None to an empty string
+            schedule_value = "" if current_bot.get("schedule") is None else str(current_bot["schedule"])
+            bot_schedule.value = schedule_value
         popup_container.visible = True
+        container_dimmer.visible = True
         page.update()
+
+    # Function to set the schedule for a bot
+    def set_schedule(_):
+        try:
+            global current_bot_name
+            print(f"Attempting to set schedule for: {current_bot_name}")
+            print(f"Current bot_list: {bot_list}")
+            current_bot = next((each_bot for each_bot in bot_list if each_bot["name"] == current_bot_name), None)
+            if current_bot is not None:
+                current_bot["schedule"] = int(bot_schedule.value) if bot_schedule.value else None
+                workers.store_data(bot_list, file_path)
+                print("Data saved successfully.")
+            else:
+                print(f"Bot not found: {current_bot_name}")
+            close_popup(None)
+        except Exception as e:
+            print(f"Error updating schedule: {e}")
 
     # Popup container for scheduling
-    popup_container = ft.Container(
+    popup_title = ft.Text("", size=12, color="#ffffff")  # White text color
+    bot_schedule = ft.TextField(
+        label="Interval (hours)",
+        label_style=ft.TextStyle(color="#ffffff", size=12)  # White label text
+    )
+    set_button = ft.ElevatedButton(
+        content=ft.Text(value="Set", size=12),
+        on_click=set_schedule,
+        style=ft.ButtonStyle(bgcolor="#fd6161", color="#ffffff", padding=2),
+        width=60,
+        height=30,
+
+    )
+    close_button = ft.ElevatedButton(
+        content=ft.Text(value="Cancel", size=12),
+        on_click=close_popup,
+        style=ft.ButtonStyle(bgcolor="#889be6", color="#ffffff", padding=2),
+        width=80,
+        height=30,
+    )
+
+    # Popup content definition
+    popup_content = ft.Container(
         content=ft.Column([
-            ft.Text("Set Schedule"),
-            ft.TextField(label="Interval (hours)"),
-            ft.ElevatedButton(text="Set", on_click=close_popup),
-            ft.ElevatedButton(text="Cancel", on_click=close_popup)
+            popup_title,
+            bot_schedule,
+            ft.Row([set_button, close_button], alignment=ft.MainAxisAlignment.CENTER, spacing=10)
         ]),
-        width=200,
-        height=150,
-        bgcolor=ft.colors.WHITE,
-        visible=False,  # Initially hidden
+        width=180,
+        padding=ft.padding.only(top=3, right=10, left=10, bottom=10),
+        bgcolor="#2c2833",  # A contrasting background color for the popup
         border_radius=10
     )
 
-    page.add(popup_container)
-
-    # Define page appearance
-    page.title = "BULLET RPA"
-    page.window_width = 200
-    page.window_height = 595
-    page.window_resizable = False
-    page.bgcolor = "#131517"
-    page.theme = ft.Theme(
-        scrollbar_theme=ft.ScrollbarTheme(
-            thickness=2,
-            cross_axis_margin=-4,
-        )
+    # Wrapping the popup content for alignment purposes
+    popup_container = ft.Column(
+        [popup_content],
+        expand=True,  # Expand to fill the available space
+        alignment=ft.alignment.center,
+        visible=False,
+        top=180,
     )
 
-    # Load the list of robots
-    file_path = 'data/robots.json'
-    bot_list = []
-    bot_list = workers.load_data(file_path)
+    # Dimmer to cover the background when the popup is open
+    container_dimmer = ft.Container(
+        width=500,
+        height=600,
+        expand=True,
+        bgcolor="#000000",
+        opacity=0.5,
+        visible=False,
+        left=0,
+        bottom=0,
+    )
 
     input_name = ft.TextField(
         label="RPA name",
         color="#ffffff",
-        height=50,
-        text_size=15,
-        label_style=ft.TextStyle(color="#ffffff", size=15),
+        height=35,
+        text_size=14,
+        label_style=ft.TextStyle(color="#ffffff", size=14),
         border_color="#889be6",
         focused_border_color="#fd6161",
+        content_padding=ft.padding.only(left=10, right=5),
     )
 
     # Define file picker and its functionality
@@ -146,17 +217,19 @@ def main(page: ft.Page):
 
     selected_files = ft.TextField(
         label="File path",
-        height=35,
+        height=30,
         width=140,
-        text_size=10,
+        text_size=13,
         label_style=ft.TextStyle(color="#ffffff", size=14),
+        color="#ffffff",
         border_color="#889be6",
         focused_border_color="#fd6161",
+        content_padding=ft.padding.only(left=10, right=5),
     )
 
     picker_button = ft.ElevatedButton(
         content=ft.Row([
-            ft.Icon(name=ft.icons.UPLOAD_FILE, size=24, color="#ffffff"),  # White icon color for visibility
+            ft.Icon(name=ft.icons.UPLOAD_FILE, size=20, color="#ffffff"),  # White icon color for visibility
         ],
             alignment=ft.MainAxisAlignment.CENTER,
         ),
@@ -164,10 +237,10 @@ def main(page: ft.Page):
             bgcolor="#1c1f24",  # Slightly lighter shade than the background for subtlety
             elevation=2,  # Small elevation to give depth
             shape=ft.RoundedRectangleBorder(radius=20),  # Rounded corners for style
-            padding=6.1
+            padding=5
         ),
-        width=35,
-        height=35,
+        width=30,
+        height=30,
         on_click=lambda _: pick_files_dialog.pick_files(
             allow_multiple=False,
         )
@@ -206,8 +279,23 @@ def main(page: ft.Page):
 
     bot_library = ft.Column(widgets, spacing=10, height=380, width=200, scroll=ft.ScrollMode.HIDDEN)
 
+    # Main content of the page
+    main_content = ft.Column([
+        input_name,
+        file_pick_row,
+        add_button,
+        ft.Divider(),
+        bot_library,
+    ])
+
+    overlay = ft.Stack([
+        main_content,
+        container_dimmer,
+        popup_container
+    ])
+
     # Add controls to the page
-    page.add(input_name, file_pick_row, add_button, ft.Divider(), bot_library,)
+    page.add(overlay)
 
 
 if __name__ == '__main__':

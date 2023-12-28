@@ -1,7 +1,7 @@
 import flet as ft
 
-def main(page: ft.Page):
 
+def main(page: ft.Page):
     # Function to close the overlay
     def close_overlay(_):
         overlay.visible = False
